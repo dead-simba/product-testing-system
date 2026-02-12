@@ -11,6 +11,10 @@ import {
   ClipboardList
 } from 'lucide-react'
 
+// Force dynamic rendering to always fetch fresh data
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 async function getDashboardMetrics() {
   const [
     activeTestersCount,
