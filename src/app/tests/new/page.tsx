@@ -7,6 +7,10 @@ import { ArrowLeft, FlaskConical, Users, Package, Calendar, Beaker } from 'lucid
 import { createTest } from '../actions'
 import { SubmitButton } from '@/components/SubmitButton'
 
+// Force dynamic rendering to always fetch fresh data
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function NewTestPage() {
     const testers = await prisma.tester.findMany({
         where: { status: 'AVAILABLE' },
