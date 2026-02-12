@@ -81,6 +81,7 @@ export default function ProductProfileActions({ product }: ProductProfileActions
         try {
             await deleteProduct(product.id)
             router.push('/products')
+            router.refresh()
         } catch (err: any) {
             setError(err.message || 'Failed to delete product')
         } finally {

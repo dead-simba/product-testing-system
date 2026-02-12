@@ -63,6 +63,7 @@ export default function ManufacturerActions({ manufacturer }: ManufacturerAction
             const result = await deleteManufacturer(manufacturer.id)
             if (result.success) {
                 router.push('/manufacturers')
+                router.refresh()
             }
         } catch (err: any) {
             setError(err.message || 'Failed to delete manufacturer')

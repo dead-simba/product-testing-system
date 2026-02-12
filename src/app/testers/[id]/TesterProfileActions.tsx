@@ -76,6 +76,7 @@ export default function TesterProfileActions({ tester }: TesterProfileActionsPro
         try {
             await deleteTester(tester.id)
             router.push('/testers')
+            router.refresh()
         } catch (err: any) {
             setError(err.message || 'Failed to delete tester')
         } finally {
