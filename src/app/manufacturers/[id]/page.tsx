@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { ArrowLeft, Save, Building2, Package, Globe, User, Mail, Trash2 } from 'lucide-react'
 import { createProductVariant } from '@/app/products/actions'
+import { SubmitButton } from '@/components/SubmitButton'
 import ProductProfileActions from '@/app/products/[id]/ProductProfileActions'
 import ManufacturerActions from './ManufacturerActions'
 import { updateManufacturer, deleteManufacturer } from '../actions'
@@ -79,9 +80,9 @@ export default async function ManufacturerDetailPage({ params }: { params: Promi
                                 </div>
 
                                 <div className="pt-4 flex justify-between">
-                                    <Button type="submit">
+                                    <SubmitButton loadingText="Updating Manufacturer...">
                                         <Save className="mr-2 h-4 w-4" /> Save Changes
-                                    </Button>
+                                    </SubmitButton>
                                 </div>
                             </form>
                         </CardContent>

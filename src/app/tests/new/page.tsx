@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { ArrowLeft, FlaskConical, Users, Package, Calendar, Beaker } from 'lucide-react'
 import { createTest } from '../actions'
+import { SubmitButton } from '@/components/SubmitButton'
 
 export default async function NewTestPage() {
     const testers = await prisma.tester.findMany({
@@ -132,11 +133,11 @@ export default async function NewTestPage() {
                         </div>
 
                         <div className="pt-4 flex gap-3">
-                            <Button type="submit" className="flex-1">
+                            <SubmitButton className="flex-1" loadingText="Launching Test...">
                                 Launch Test
-                            </Button>
+                            </SubmitButton>
                             <Link href="/tests" className="flex-1">
-                                <Button variant="outline" className="w-full">Cancel</Button>
+                                <Button variant="outline" className="w-full" type="button">Cancel</Button>
                             </Link>
                         </div>
                     </form>

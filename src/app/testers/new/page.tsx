@@ -2,6 +2,7 @@
 
 import { createTester } from '../actions'
 import { Button } from '@/components/ui/button'
+import { SubmitButton } from '@/components/SubmitButton'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import Link from 'next/link'
@@ -120,7 +121,7 @@ export default function NewTesterPage() {
                     <Link href="/testers">
                         <Button variant="outline" type="button">Cancel</Button>
                     </Link>
-                    <Button type="submit">Create Tester</Button>
+                    <SubmitButton loadingText="Creating Tester...">Create Tester</SubmitButton>
                 </div>
             </form>
         </div>

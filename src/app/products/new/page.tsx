@@ -4,8 +4,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { ArrowLeft, Save, Package, Building2, Tag } from 'lucide-react'
+import { ArrowLeft, Save, Building2, Tag } from 'lucide-react'
 import { createProduct } from '../actions'
+import { SubmitButton } from '@/components/SubmitButton'
 
 const COMMON_CATEGORIES = ['Serum', 'Moisturizer', 'Cleanser', 'Toner', 'SPF', 'Oil', 'Mask', 'Treatment']
 const COMMON_CLAIMS = ['Anti-Acne', 'Anti-Aging', 'Hydrating', 'Brightening', 'Soothing', 'Pore-Tightening', 'Barrier-Repair']
@@ -14,6 +15,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function NewProductPage() {
     const manufacturers = await prisma.manufacturer.findMany({
+        where: { status: 'ACTIVE' },
         orderBy: { name: 'asc' }
     })
 
@@ -114,11 +116,11 @@ export default async function NewProductPage() {
                         </div>
 
                         <div className="pt-4 flex gap-3">
-                            <Button type="submit" className="flex-1">
+                            <SubmitButton className="flex-1" loadingText="Creating Product...">
                                 <Save className="mr-2 h-4 w-4" /> Create Product
-                            </Button>
+                            </SubmitButton>
                             <Link href="/products" className="flex-1">
-                                <Button variant="outline" className="w-full">Cancel</Button>
+                                <Button variant="outline" className="w-full" type="button">Cancel</Button>
                             </Link>
                         </div>
                     </form>

@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { ArrowLeft, Package, Plus, Building2, Tag, Beaker, FileText, ClipboardList, Calendar, Info } from 'lucide-react'
 import { createProductVariant } from '../actions'
+import { SubmitButton } from '@/components/SubmitButton'
 import ProductProfileActions from './ProductProfileActions'
 import BatchActions from './BatchActions'
 
@@ -150,9 +151,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                                         <Textarea id="notes" name="notes" placeholder="e.g. 'Issues with viscosity noted in Batch 1'" rows={2} />
                                     </div>
 
-                                    <Button type="submit" className="w-full">
+                                    <SubmitButton className="w-full" loadingText="Adding Batch...">
                                         <Plus className="mr-2 h-4 w-4" /> Add Batch
-                                    </Button>
+                                    </SubmitButton>
                                 </form>
                             </div>
                         </CardContent>

@@ -1,5 +1,6 @@
 import { saveFeedback } from './actions'
 import { Button } from '@/components/ui/button'
+import { SubmitButton } from '@/components/SubmitButton'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
@@ -215,7 +216,7 @@ export default async function NewFeedbackPage({
                     <Link href={`/tests/${test.id}`}>
                         <Button variant="outline" type="button">Cancel</Button>
                     </Link>
-                    <Button type="submit" size="lg" className="w-48">Save Feedback</Button>
+                    <SubmitButton size="lg" className="w-48" loadingText="Saving Feedback...">Save Feedback</SubmitButton>
                 </div>
             </form>
         </div>

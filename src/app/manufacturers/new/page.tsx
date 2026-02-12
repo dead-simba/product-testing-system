@@ -3,8 +3,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { ArrowLeft, Save, Building2 } from 'lucide-react'
+import { ArrowLeft, Save } from 'lucide-react'
 import { createManufacturer } from '../actions'
+import { SubmitButton } from '@/components/SubmitButton'
 
 export default function NewManufacturerPage() {
     return (
@@ -52,11 +53,11 @@ export default function NewManufacturerPage() {
                         </div>
 
                         <div className="pt-4 flex gap-3">
-                            <Button type="submit" className="flex-1">
+                            <SubmitButton className="flex-1" loadingText="Saving Manufacturer...">
                                 <Save className="mr-2 h-4 w-4" /> Save Manufacturer
-                            </Button>
+                            </SubmitButton>
                             <Link href="/manufacturers" className="flex-1">
-                                <Button variant="outline" className="w-full">Cancel</Button>
+                                <Button variant="outline" className="w-full" type="button">Cancel</Button>
                             </Link>
                         </div>
                     </form>
