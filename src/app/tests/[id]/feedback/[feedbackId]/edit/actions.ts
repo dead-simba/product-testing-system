@@ -5,10 +5,11 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { uploadToCloudinary } from '@/lib/cloudinary'
 
-export async function saveFeedback(testId: string, day: number, formData: FormData) {
+export async function updateFeedback(feedbackId: string, testId: string, day: number, formData: FormData) {
     // Handle File Uploads
     const files = formData.getAll('photos') as File[]
-    const photoUrls: string[] = []
+    const existingPhotosJson = formData.get('existingPhotos') as string
+    const photoUrls: string[] = existingPhotosJson ? JSON.parse(existingPhotosJson) : []
 
     for (const file of files) {
         if (file.size > 0) {
@@ -72,20 +73,14 @@ export async function saveFeedback(testId: string, day: number, formData: FormDa
         admin_notes: notes
     }
 
-    // Save to DB
-    await prisma.feedbackEntry.create({
+    // Update DB
+    await prisma.feedbackEntry.update({
+        where: { id: feedbackId },
         data: {
-            testId,
-            day,
-            date: new Date(),
-            isCompleted: true,
             data: JSON.stringify(feedbackData),
             photos: JSON.stringify(photoUrls)
         }
     })
-
-    // Optional: Update simple running average score on Product if needed
-    // For now, we just save the entry.
 
     revalidatePath(`/tests/${testId}`)
     redirect(`/tests/${testId}`)

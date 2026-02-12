@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowLeft, Calendar, User, Package, PlusCircle, CheckCircle2, Download, ShieldAlert, Ban } from 'lucide-react'
 import { format, differenceInDays } from 'date-fns'
 import TestActions from './TestActions'
+import FeedbackCard from './FeedbackCard'
 
 
 
@@ -121,45 +122,9 @@ export default async function TestDetailPage({ params }: { params: Promise<{ id:
                     </Card>
                 ) : (
                     <div className="space-y-4">
-                        {test.feedbackEntries.map((entry: any) => {
-                            const data = entry.data ? JSON.parse(entry.data) : {}
-                            return (
-                                <Card key={entry.id}>
-                                    <CardHeader className="py-4 bg-slate-50/50">
-                                        <div className="flex justify-between items-center">
-                                            <CardTitle className="text-base font-medium">Day {entry.day}</CardTitle>
-                                            <span className="text-xs text-muted-foreground">{format(new Date(entry.date), 'MMM d, h:mm a')}</span>
-                                        </div>
-                                    </CardHeader>
-                                    <CardContent className="py-4 text-sm mt-2 space-y-3">
-                                        {/* Brief Summary */}
-                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                            <div>
-                                                <span className="block text-xs text-muted-foreground">Satisfaction</span>
-                                                <span className="font-medium text-lg">{data.user_experience?.satisfaction || '-'} <span className="text-xs font-normal text-muted-foreground">/ 10</span></span>
-                                            </div>
-                                            <div>
-                                                <span className="block text-xs text-muted-foreground">Overall Improvement</span>
-                                                <span className="font-medium text-lg">{data.effectiveness_metrics?.overall_improvement || '-'} <span className="text-xs font-normal text-muted-foreground">/ 10</span></span>
-                                            </div>
-                                            <div>
-                                                <span className="block text-xs text-muted-foreground">Adverse Reactions</span>
-                                                <span className={`font-medium ${data.physical_response?.adverse_reaction === 'yes' ? 'text-red-600' : 'text-green-600'}`}>
-                                                    {data.physical_response?.adverse_reaction === 'yes' ? 'Yes' : 'None'}
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        {data.admin_notes && (
-                                            <div className="pt-2 border-t mt-2">
-                                                <span className="block text-xs text-muted-foreground mb-1">Notes:</span>
-                                                <p className="text-slate-700 italic">"{data.admin_notes}"</p>
-                                            </div>
-                                        )}
-                                    </CardContent>
-                                </Card>
-                            )
-                        })}
+                        {test.feedbackEntries.map((entry: any) => (
+                            <FeedbackCard key={entry.id} entry={entry} testId={test.id} />
+                        ))}
                     </div>
                 )}
             </div>
