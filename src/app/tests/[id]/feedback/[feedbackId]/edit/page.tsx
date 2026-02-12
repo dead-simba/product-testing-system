@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { ArrowLeft, ImagePlus } from 'lucide-react'
 import prisma from '@/lib/prisma'
 import { notFound } from 'next/navigation'
+import { MediaUpload } from '@/components/MediaUpload'
 
 export default async function EditFeedbackPage({
     params
@@ -229,6 +230,22 @@ export default async function EditFeedbackPage({
                             className="w-full min-h-[100px] border rounded-md p-3"
                             placeholder="Observations from interview..."
                             defaultValue={data.admin_notes || ''}
+                        />
+                    </CardContent>
+                </Card>
+
+                {/* SECTION 6: PHOTOS / VIDEOS */}
+                <Card className="mt-6 border-dashed bg-slate-50">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <ImagePlus className="h-5 w-5 text-blue-600" />
+                            6. Photos & Videos
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <MediaUpload
+                            name="photos"
+                            existingPhotos={entry.photos ? JSON.parse(entry.photos) : []}
                         />
                     </CardContent>
                 </Card>

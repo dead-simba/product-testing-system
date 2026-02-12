@@ -8,6 +8,7 @@ import { ArrowLeft, ImagePlus } from 'lucide-react'
 import prisma from '@/lib/prisma'
 
 
+import { MediaUpload } from '@/components/MediaUpload'
 
 export default async function NewFeedbackPage({
     params,
@@ -221,22 +222,7 @@ export default async function NewFeedbackPage({
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="space-y-4">
-                            <div className="p-8 border-2 border-dashed border-slate-300 rounded-lg flex flex-col items-center justify-center gap-2 bg-white hover:bg-slate-50 transition-colors cursor-pointer relative">
-                                <ImagePlus className="h-10 w-10 text-slate-400" />
-                                <div className="text-center">
-                                    <p className="text-sm font-medium">Click to upload progress images or videos</p>
-                                    <p className="text-xs text-muted-foreground">You can select multiple files</p>
-                                </div>
-                                <input
-                                    type="file"
-                                    name="photos"
-                                    multiple
-                                    accept="image/*,video/*"
-                                    className="absolute inset-0 opacity-0 cursor-pointer"
-                                />
-                            </div>
-                        </div>
+                        <MediaUpload name="photos" />
                     </CardContent>
                 </Card>
 
