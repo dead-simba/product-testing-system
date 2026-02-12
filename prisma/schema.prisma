@@ -1,0 +1,134 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated-client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tester {
+  id                String   @id @default(uuid())
+  firstName         String
+  lastName          String
+  email             String?
+  phone             String?
+  age               Int
+  gender            String
+  location          String?
+  skinType          String
+  primaryConcern    String
+  secondaryConcerns String
+  allergies         String?
+  medications       String?
+  reliabilityScore  Float    @default(100.0)
+  status            String   @default("AVAILABLE")
+  notes             String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  tests             Test[]
+}
+
+model Manufacturer {
+  id           String    @id @default(uuid())
+  name         String
+  website      String?
+  notes        String?
+  qualityScore Float     @default(0.0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  contactName  String?
+  email        String?
+  products     Product[]
+}
+
+model Product {
+  id                 String           @id @default(uuid())
+  name               String
+  category           String
+  primaryClaim       String
+  secondaryClaims    String?
+  usageInstructions  String?
+  volume             String?
+  effectivenessScore Float            @default(0.0)
+  safetyScore        Float            @default(100.0)
+  status             String           @default("AVAILABLE")
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  manufacturerId     String
+  manufacturer       Manufacturer     @relation(fields: [manufacturerId], references: [id])
+  variants           ProductVariant[]
+  tests              Test[]
+}
+
+model ProductVariant {
+  id                String    @id @default(uuid())
+  productId         String
+  batchNumber       String
+  sku               String?   @unique
+  formulaVersion    String?
+  manufacturingDate DateTime?
+  expirationDate    DateTime?
+  ingredients       String?
+  notes             String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  product           Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  tests             Test[]
+}
+
+model Test {
+  id                 String              @id @default(uuid())
+  status             String              @default("ACTIVE")
+  startDate          DateTime            @default(now())
+  endDate            DateTime?
+  durationDays       Int
+  feedbackSchedule   String
+  productSize        String?
+  testerId           String
+  productId          String
+  productVariantId   String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  baselineAssessment BaselineAssessment?
+  feedbackEntries    FeedbackEntry[]
+  finalAssessment    FinalAssessment?
+  productVariant     ProductVariant?     @relation(fields: [productVariantId], references: [id], onDelete: SetNull)
+  product            Product             @relation(fields: [productId], references: [id], onDelete: Cascade)
+  tester             Tester              @relation(fields: [testerId], references: [id], onDelete: Cascade)
+}
+
+model BaselineAssessment {
+  id             String   @id @default(uuid())
+  testId         String   @unique
+  date           DateTime @default(now())
+  metrics        String
+  photos         String?
+  notes          String?
+  testerSnapshot String?
+  test           Test     @relation(fields: [testId], references: [id], onDelete: Cascade)
+}
+
+model FinalAssessment {
+  id           String   @id @default(uuid())
+  testId       String   @unique
+  date         DateTime @default(now())
+  metrics      String
+  improvements String
+  overallScore Float
+  photos       String?
+  notes        String?
+  test         Test     @relation(fields: [testId], references: [id], onDelete: Cascade)
+}
+
+model FeedbackEntry {
+  id          String   @id @default(uuid())
+  testId      String
+  day         Int
+  date        DateTime
+  isCompleted Boolean  @default(false)
+  data        String?
+  photos      String?
+  test        Test     @relation(fields: [testId], references: [id], onDelete: Cascade)
+}
