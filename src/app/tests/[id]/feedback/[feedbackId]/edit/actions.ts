@@ -6,21 +6,16 @@ import { redirect } from 'next/navigation'
 import { uploadToCloudinary } from '@/lib/cloudinary'
 
 export async function updateFeedback(feedbackId: string, testId: string, day: number, formData: FormData) {
-    // Handle File Uploads
-    const files = formData.getAll('photos') as File[]
+    // Extract photo URLs from hidden input (Direct uploads)
+    const newPhotosJson = formData.get('photos_json') as string
+    const newPhotoUrls: string[] = newPhotosJson ? JSON.parse(newPhotosJson) : []
+
+    // Existing photos
     const existingPhotosJson = formData.get('existingPhotos') as string
     const photoUrls: string[] = existingPhotosJson ? JSON.parse(existingPhotosJson) : []
 
-    for (const file of files) {
-        if (file.size > 0) {
-            try {
-                const url = await uploadToCloudinary(file) as string
-                photoUrls.push(url)
-            } catch (error) {
-                console.error('Cloudinary upload error:', error)
-            }
-        }
-    }
+    // Merge them
+    photoUrls.push(...newPhotoUrls)
 
     // Extract data from form
     const adverse_reaction = formData.get('adverse_reaction') as string
