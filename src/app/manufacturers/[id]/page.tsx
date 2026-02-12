@@ -6,6 +6,9 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { ArrowLeft, Save, Building2, Package, Globe, User, Mail, Trash2 } from 'lucide-react'
+import { createProductVariant } from '@/app/products/actions'
+import ProductProfileActions from '@/app/products/[id]/ProductProfileActions'
+import ManufacturerActions from './ManufacturerActions'
 import { updateManufacturer, deleteManufacturer } from '../actions'
 
 export default async function ManufacturerDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -117,23 +120,10 @@ export default async function ManufacturerDetailPage({ params }: { params: Promi
                 <div className="space-y-6">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Danger Zone</CardTitle>
+                            <CardTitle>Actions</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-sm text-muted-foreground mb-4">Deleting a manufacturer is only possible if they have no associated products.</p>
-                            <form action={async () => {
-                                'use server'
-                                try {
-                                    await deleteManufacturer(id)
-                                } catch (e: any) {
-                                    // This is a simple server action delete, error handling usually involves redirecting with error param 
-                                    // or using useActionState (Next.js 15). For simplicity we'll just throw for now.
-                                }
-                            }}>
-                                <Button variant="destructive" className="w-full" disabled={manufacturer.products.length > 0}>
-                                    <Trash2 className="mr-2 h-4 w-4" /> Delete Manufacturer
-                                </Button>
-                            </form>
+                            <ManufacturerActions manufacturer={manufacturer} />
                         </CardContent>
                     </Card>
                 </div>

@@ -10,6 +10,8 @@ import { createProduct } from '../actions'
 const COMMON_CATEGORIES = ['Serum', 'Moisturizer', 'Cleanser', 'Toner', 'SPF', 'Oil', 'Mask', 'Treatment']
 const COMMON_CLAIMS = ['Anti-Acne', 'Anti-Aging', 'Hydrating', 'Brightening', 'Soothing', 'Pore-Tightening', 'Barrier-Repair']
 
+export const dynamic = 'force-dynamic'
+
 export default async function NewProductPage() {
     const manufacturers = await prisma.manufacturer.findMany({
         orderBy: { name: 'asc' }
@@ -50,11 +52,18 @@ export default async function NewProductPage() {
                                     required
                                 >
                                     <option value="">Select Manufacturer...</option>
-                                    {manufacturers.map(m => (
-                                        <option key={m.id} value={m.id}>{m.name}</option>
-                                    ))}
+                                    {manufacturers.length > 0 ? (
+                                        manufacturers.map(m => (
+                                            <option key={m.id} value={m.id}>{m.name}</option>
+                                        ))
+                                    ) : (
+                                        <option value="" disabled>No manufacturers found. Please add one first.</option>
+                                    )}
                                 </select>
-                                <p className="text-[10px] text-muted-foreground">Manufacturer not listed? <Link href="/manufacturers/new" className="text-blue-600 hover:underline">Add it first</Link></p>
+                                <p className="text-[10px] text-muted-foreground italic">
+                                    {manufacturers.length === 0 ? "⚠️ You must add a manufacturer before creating a product." : "Manufacturer not listed?"}
+                                    <Link href="/manufacturers/new" className="text-blue-600 hover:underline ml-1">Add it here</Link>
+                                </p>
                             </div>
                             <div className="grid gap-2">
                                 <label htmlFor="category" className="text-sm font-medium">Category *</label>

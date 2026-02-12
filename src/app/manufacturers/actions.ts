@@ -48,19 +48,33 @@ export async function updateManufacturer(id: string, formData: FormData) {
     redirect('/manufacturers')
 }
 
-export async function deleteManufacturer(id: string) {
-    // Check if manufacturer has products
-    const productsCount = await prisma.product.count({
-        where: { manufacturerId: id }
+export async function archiveManufacturer(id: string) {
+    await prisma.manufacturer.update({
+        where: { id },
+        data: { status: 'ARCHIVED' }
     })
 
-    if (productsCount > 0) {
-        throw new Error('Cannot delete manufacturer with associated products.')
-    }
+    revalidatePath('/manufacturers')
+    revalidatePath(`/manufacturers/${id}`)
+    return { success: true }
+}
 
+export async function unarchiveManufacturer(id: string) {
+    await prisma.manufacturer.update({
+        where: { id },
+        data: { status: 'ACTIVE' }
+    })
+
+    revalidatePath('/manufacturers')
+    revalidatePath(`/manufacturers/${id}`)
+    return { success: true }
+}
+
+export async function deleteManufacturer(id: string) {
     await prisma.manufacturer.delete({
         where: { id }
     })
 
     revalidatePath('/manufacturers')
+    return { success: true }
 }
