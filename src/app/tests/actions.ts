@@ -8,22 +8,12 @@ import { redirect } from 'next/navigation'
 
 export async function createTest(formData: FormData) {
     const testerId = formData.get('testerId') as string
-    const productVariantId = formData.get('productVariantId') as string
-    const productSize = formData.get('productSize') as string
-
-    // Find the variant to get the productId
-    const variant = await prisma.productVariant.findUnique({
-        where: { id: productVariantId },
-        select: { productId: true }
-    })
-
-    if (!variant) throw new Error('Product batch not found')
-    const productId = variant.productId
+    const productVariantIds = formData.getAll('productVariantId') as string[]
+    const productSizes = formData.getAll('productSize') as string[]
 
     const durationDays = parseInt(formData.get('durationDays') as string)
     const feedbackSchedule = formData.get('feedbackSchedule') as string
     const startDateStr = formData.get('startDate') as string
-
     const startDate = startDateStr ? new Date(startDateStr) : new Date()
 
     // Fetch tester profile for snapshot
@@ -42,37 +32,55 @@ export async function createTest(formData: FormData) {
 
     // Transaction for atomic update/create
     await prisma.$transaction(async (tx) => {
+        // Mark tester as testing
         await tx.tester.update({
             where: { id: testerId },
             data: { status: 'TESTING' }
         })
 
-        await tx.product.update({
-            where: { id: productId },
-            data: { status: 'TESTING' }
-        })
+        for (let i = 0; i < productVariantIds.length; i++) {
+            const productVariantId = productVariantIds[i]
+            const productSize = productSizes[i]
 
-        const test = await tx.test.create({
-            data: {
-                testerId,
-                productId,
-                productVariantId: productVariantId || null,
-                productSize: productSize || null,
-                durationDays,
-                feedbackSchedule,
-                startDate,
-                status: 'ACTIVE'
-            }
-        })
+            if (!productVariantId) continue
 
-        // Create initial baseline record with the snapshot
-        await tx.baselineAssessment.create({
-            data: {
-                testId: test.id,
-                testerSnapshot,
-                metrics: '{}' // Empty metrics to start
-            }
-        })
+            // Find the variant to get the productId
+            const variant = await tx.productVariant.findUnique({
+                where: { id: productVariantId },
+                select: { productId: true }
+            })
+
+            if (!variant) throw new Error(`Product batch ${productVariantId} not found`)
+            const productId = variant.productId
+
+            // Mark product as testing
+            await tx.product.update({
+                where: { id: productId },
+                data: { status: 'TESTING' }
+            })
+
+            const test = await tx.test.create({
+                data: {
+                    testerId,
+                    productId,
+                    productVariantId: productVariantId || null,
+                    productSize: productSize || null,
+                    durationDays,
+                    feedbackSchedule,
+                    startDate,
+                    status: 'ACTIVE'
+                }
+            })
+
+            // Create initial baseline record with the snapshot
+            await tx.baselineAssessment.create({
+                data: {
+                    testId: test.id,
+                    testerSnapshot,
+                    metrics: '{}'
+                }
+            })
+        }
     })
 
     revalidatePath('/tests')
