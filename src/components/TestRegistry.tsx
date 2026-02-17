@@ -1,47 +1,102 @@
 'use client'
 
-import { useState, Fragment } from 'react'
+'use client'
+
+import { useState, Fragment, useMemo } from 'react'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
-import { Search, ChevronDown, ChevronRight, FlaskConical } from 'lucide-react'
+import { Search, ChevronDown, ChevronRight, FlaskConical, Users, Package } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { format, addDays, differenceInDays } from 'date-fns'
 
-interface TestGroup {
+interface Test {
+    id: string
+    startDate: Date | string
+    durationDays: number
     tester: {
         id: string
         firstName: string
         lastName: string
         primaryConcern: string
     }
-    tests: any[]
+    product: {
+        id: string
+        name: string
+        primaryClaim: string
+    }
+    feedbackEntries: any[]
 }
 
-export function TestRegistry({ initialGroups }: { initialGroups: TestGroup[] }) {
-    const [searchQuery, setSearchQuery] = useState('')
-    const [expandedTesters, setExpandedTesters] = useState<string[]>([])
+type ViewMode = 'tester' | 'product'
 
-    const toggleTester = (id: string) => {
-        setExpandedTesters(prev =>
-            prev.includes(id) ? prev.filter(tid => tid !== id) : [...prev, id]
+export function TestRegistry({ tests }: { tests: Test[] }) {
+    const [searchQuery, setSearchQuery] = useState('')
+    const [viewMode, setViewMode] = useState<ViewMode>('tester')
+    const [expandedGroups, setExpandedGroups] = useState<string[]>([])
+
+    const toggleGroup = (id: string) => {
+        setExpandedGroups(prev =>
+            prev.includes(id) ? prev.filter(gid => gid !== id) : [...prev, id]
         )
     }
 
-    const filteredGroups = initialGroups.filter(group =>
-        `${group.tester.firstName} ${group.tester.lastName}`.toLowerCase().includes(searchQuery.toLowerCase())
+    const groups = useMemo(() => {
+        const groupsMap = new Map<string, { id: string; name: string; subtitle: string; tests: Test[] }>()
+
+        tests.forEach(test => {
+            const id = viewMode === 'tester' ? test.tester.id : test.product.id
+            const name = viewMode === 'tester'
+                ? `${test.tester.firstName} ${test.tester.lastName}`
+                : test.product.name
+            const subtitle = viewMode === 'tester'
+                ? test.tester.primaryConcern
+                : test.product.primaryClaim
+
+            if (!groupsMap.has(id)) {
+                groupsMap.set(id, { id, name, subtitle, tests: [] })
+            }
+            groupsMap.get(id)!.tests.push(test)
+        })
+
+        return Array.from(groupsMap.values())
+    }, [tests, viewMode])
+
+    const filteredGroups = groups.filter(group =>
+        group.name.toLowerCase().includes(searchQuery.toLowerCase())
     )
 
     return (
         <div className="space-y-4">
-            <div className="relative w-full max-w-sm">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                    placeholder="Search by tester name..."
-                    className="pl-8"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                />
+            <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+                <div className="relative w-full max-w-sm">
+                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input
+                        placeholder={`Search by ${viewMode === 'tester' ? 'tester' : 'product'} name...`}
+                        className="pl-8"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                </div>
+
+                <div className="flex bg-slate-100 p-1 rounded-lg border">
+                    <Button
+                        variant={viewMode === 'tester' ? 'secondary' : 'ghost'}
+                        size="sm"
+                        className="rounded-md gap-2"
+                        onClick={() => { setViewMode('tester'); setExpandedGroups([]); }}
+                    >
+                        <Users size={14} /> By Tester
+                    </Button>
+                    <Button
+                        variant={viewMode === 'product' ? 'secondary' : 'ghost'}
+                        size="sm"
+                        className="rounded-md gap-2"
+                        onClick={() => { setViewMode('product'); setExpandedGroups([]); }}
+                    >
+                        <Package size={14} /> By Product
+                    </Button>
+                </div>
             </div>
 
             <div className="rounded-md border overflow-hidden">
@@ -49,7 +104,7 @@ export function TestRegistry({ initialGroups }: { initialGroups: TestGroup[] }) 
                     <thead className="bg-slate-50 border-b">
                         <tr className="text-left text-muted-foreground">
                             <th className="p-4 font-medium w-10"></th>
-                            <th className="p-4 font-medium">Tester</th>
+                            <th className="p-4 font-medium">{viewMode === 'tester' ? 'Tester' : 'Product'}</th>
                             <th className="p-4 font-medium text-center">Active Tests</th>
                             <th className="p-4 font-medium text-right">Actions</th>
                         </tr>
@@ -58,19 +113,19 @@ export function TestRegistry({ initialGroups }: { initialGroups: TestGroup[] }) 
                         {filteredGroups.length === 0 ? (
                             <tr>
                                 <td colSpan={4} className="p-8 text-center text-muted-foreground">
-                                    No testers found matching "{searchQuery}".
+                                    No records found matching "{searchQuery}".
                                 </td>
                             </tr>
                         ) : (
                             filteredGroups.map((group) => (
-                                <Fragment key={group.tester.id}>
-                                    <tr className="hover:bg-slate-50/50 transition-colors cursor-pointer" onClick={() => toggleTester(group.tester.id)}>
+                                <Fragment key={group.id}>
+                                    <tr className="hover:bg-slate-50/50 transition-colors cursor-pointer" onClick={() => toggleGroup(group.id)}>
                                         <td className="p-4 text-center">
-                                            {expandedTesters.includes(group.tester.id) ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                                            {expandedGroups.includes(group.id) ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                                         </td>
                                         <td className="p-4 font-medium">
-                                            {group.tester.firstName} {group.tester.lastName}
-                                            <div className="text-xs text-muted-foreground font-normal capitalize">{group.tester.primaryConcern}</div>
+                                            {group.name}
+                                            <div className="text-xs text-muted-foreground font-normal capitalize">{group.subtitle}</div>
                                         </td>
                                         <td className="p-4 text-center">
                                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
@@ -78,12 +133,12 @@ export function TestRegistry({ initialGroups }: { initialGroups: TestGroup[] }) 
                                             </span>
                                         </td>
                                         <td className="p-4 text-right">
-                                            <Link href={`/testers/${group.tester.id}`}>
-                                                <Button variant="ghost" size="sm">View Tester</Button>
+                                            <Link href={viewMode === 'tester' ? `/testers/${group.id}` : `/products/${group.id}`}>
+                                                <Button variant="ghost" size="sm">View {viewMode === 'tester' ? 'Tester' : 'Product'}</Button>
                                             </Link>
                                         </td>
                                     </tr>
-                                    {expandedTesters.includes(group.tester.id) && (
+                                    {expandedGroups.includes(group.id) && (
                                         <tr className="bg-slate-50/30">
                                             <td colSpan={4} className="p-0">
                                                 <div className="p-4 space-y-3">
@@ -91,18 +146,20 @@ export function TestRegistry({ initialGroups }: { initialGroups: TestGroup[] }) 
                                                         const daysElapsed = differenceInDays(new Date(), new Date(test.startDate))
                                                         const totalDays = test.durationDays
                                                         const daysRemaining = totalDays - daysElapsed
-                                                        const endDate = addDays(new Date(test.startDate), totalDays)
                                                         const progressPct = Math.min(100, Math.round((test.feedbackEntries.length / totalDays) * 100))
+
+                                                        const subName = viewMode === 'tester' ? test.product.name : `${test.tester.firstName} ${test.tester.lastName}`
+                                                        const subTitle = viewMode === 'tester' ? test.product.primaryClaim : test.tester.primaryConcern
 
                                                         return (
                                                             <Card key={test.id} className="border-slate-200">
                                                                 <CardContent className="p-3 flex items-center justify-between gap-4">
                                                                     <div className="flex-1 min-w-0">
                                                                         <div className="flex items-center gap-2">
-                                                                            <FlaskConical size={14} className="text-blue-500" />
-                                                                            <span className="font-semibold text-sm truncate">{test.product.name}</span>
+                                                                            {viewMode === 'tester' ? <FlaskConical size={14} className="text-blue-500" /> : <Users size={14} className="text-purple-500" />}
+                                                                            <span className="font-semibold text-sm truncate">{subName}</span>
                                                                         </div>
-                                                                        <div className="text-xs text-muted-foreground truncate">{test.product.primaryClaim}</div>
+                                                                        <div className="text-xs text-muted-foreground truncate">{subTitle}</div>
                                                                     </div>
                                                                     <div className="w-32 hidden sm:block">
                                                                         <div className="text-[10px] flex justify-between mb-1">

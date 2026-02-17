@@ -17,20 +17,6 @@ export default async function TestsPage() {
         orderBy: { startDate: 'desc' }
     })
 
-    // Group tests by tester
-    const groupsMap = new Map()
-    tests.forEach(test => {
-        if (!groupsMap.has(test.testerId)) {
-            groupsMap.set(test.testerId, {
-                tester: test.tester,
-                tests: []
-            })
-        }
-        groupsMap.get(test.testerId).tests.push(test)
-    })
-
-    const initialGroups = Array.from(groupsMap.values())
-
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
@@ -45,7 +31,7 @@ export default async function TestsPage() {
                 </Link>
             </div>
 
-            <TestRegistry initialGroups={initialGroups} />
+            <TestRegistry tests={tests} />
         </div>
     )
 }
