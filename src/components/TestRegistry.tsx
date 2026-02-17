@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Fragment } from 'react'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
 import { Search, ChevronDown, ChevronRight, FlaskConical } from 'lucide-react'
@@ -63,7 +63,7 @@ export function TestRegistry({ initialGroups }: { initialGroups: TestGroup[] }) 
                             </tr>
                         ) : (
                             filteredGroups.map((group) => (
-                                <table-row key={group.tester.id}>
+                                <Fragment key={group.tester.id}>
                                     <tr className="hover:bg-slate-50/50 transition-colors cursor-pointer" onClick={() => toggleTester(group.tester.id)}>
                                         <td className="p-4 text-center">
                                             {expandedTesters.includes(group.tester.id) ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
@@ -129,7 +129,7 @@ export function TestRegistry({ initialGroups }: { initialGroups: TestGroup[] }) 
                                             </td>
                                         </tr>
                                     )}
-                                </table-row>
+                                </Fragment>
                             ))
                         )}
                     </tbody>
