@@ -11,7 +11,7 @@ interface Tester {
     id: string
     firstName: string
     lastName: string
-    email: string
+    email: string | null
     age: number
     gender: string
     skinType: string
@@ -25,7 +25,7 @@ export function TesterRegistry({ testers }: { testers: Tester[] }) {
 
     const filteredTesters = testers.filter(tester =>
         `${tester.firstName} ${tester.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tester.email.toLowerCase().includes(searchQuery.toLowerCase())
+        (tester.email?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
     )
 
     return (
@@ -83,10 +83,10 @@ export function TesterRegistry({ testers }: { testers: Tester[] }) {
                                         </td>
                                         <td className="p-4">
                                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase border ${tester.status === 'AVAILABLE'
-                                                    ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
-                                                    : tester.status === 'TESTING'
-                                                        ? 'bg-blue-50 text-blue-700 border-blue-100'
-                                                        : 'bg-slate-50 text-slate-700 border-slate-100'
+                                                ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
+                                                : tester.status === 'TESTING'
+                                                    ? 'bg-blue-50 text-blue-700 border-blue-100'
+                                                    : 'bg-slate-50 text-slate-700 border-slate-100'
                                                 }`}>
                                                 {tester.status}
                                             </span>
@@ -96,7 +96,7 @@ export function TesterRegistry({ testers }: { testers: Tester[] }) {
                                                 <div className="h-1.5 w-16 bg-slate-100 rounded-full overflow-hidden shrink-0">
                                                     <div
                                                         className={`h-full transition-all duration-1000 ${tester.reliabilityScore >= 90 ? 'bg-emerald-500' :
-                                                                tester.reliabilityScore >= 70 ? 'bg-amber-500' : 'bg-rose-500'
+                                                            tester.reliabilityScore >= 70 ? 'bg-amber-500' : 'bg-rose-500'
                                                             }`}
                                                         style={{ width: `${tester.reliabilityScore}%` }}
                                                     />
