@@ -79,22 +79,24 @@ export function TestRegistry({ tests }: { tests: Test[] }) {
                     />
                 </div>
 
-                <div className="flex bg-slate-100 p-1 rounded-lg border">
+                <div className="flex bg-slate-100/80 p-1 rounded-xl border border-slate-200/60 shadow-sm backdrop-blur-sm">
                     <Button
-                        variant={viewMode === 'tester' ? 'secondary' : 'ghost'}
+                        variant="ghost"
                         size="sm"
-                        className="rounded-md gap-2"
+                        className={`rounded-lg gap-2 transition-all duration-200 px-4 ${viewMode === 'tester' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-800 hover:bg-white/50'}`}
                         onClick={() => { setViewMode('tester'); setExpandedGroups([]); }}
                     >
-                        <Users size={14} /> By Tester
+                        <Users size={14} className={viewMode === 'tester' ? 'text-blue-500' : ''} />
+                        <span className="font-semibold">By Tester</span>
                     </Button>
                     <Button
-                        variant={viewMode === 'product' ? 'secondary' : 'ghost'}
+                        variant="ghost"
                         size="sm"
-                        className="rounded-md gap-2"
+                        className={`rounded-lg gap-2 transition-all duration-200 px-4 ${viewMode === 'product' ? 'bg-white shadow-sm text-purple-600' : 'text-slate-500 hover:text-slate-800 hover:bg-white/50'}`}
                         onClick={() => { setViewMode('product'); setExpandedGroups([]); }}
                     >
-                        <Package size={14} /> By Product
+                        <Package size={14} className={viewMode === 'product' ? 'text-purple-500' : ''} />
+                        <span className="font-semibold">By Product</span>
                     </Button>
                 </div>
             </div>

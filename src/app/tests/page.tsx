@@ -21,7 +21,7 @@ export default async function TestsPage() {
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Active Tests</h1>
+                    <h1 className="text-3xl font-bold tracking-tight">Active Tests ({tests.length})</h1>
                     <p className="text-muted-foreground">Monitor ongoing product tests and feedback collection.</p>
                 </div>
                 <Link href="/tests/new">
